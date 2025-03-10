@@ -16,17 +16,18 @@ export class Service{
     }
 
     async createPost({title, slug, content, featuredImage, status, userId}){
+    // console.log("Creating post with userId:", userId); // Log userId to verify it's being passed correctly
         try {
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 slug,
                 {
+                    userid:userId,
                     title,
                     content,
                     featuredImage,
                     status,
-                    userId,
                 }
             )
         } catch (error) {
@@ -84,13 +85,12 @@ export class Service{
 
     async getPosts(queries = [Query.equal("status", "active")]){
         try {
-            return await this.databases.listDocuments(
+            const response =  await this.databases.listDocuments(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
-                queries,
-                
-
+                queries
             )
+            return response;
         } catch (error) {
             console.log("Appwrite serive :: getPosts :: error", error);
             return false
@@ -101,11 +101,14 @@ export class Service{
 
     async uploadFile(file){
         try {
-            return await this.bucket.createFile(
+            const response =  await this.bucket.createFile(
                 conf.appwriteBucketId,
                 ID.unique(),
                 file
             )
+            console.log(response);
+            
+            return response;
         } catch (error) {
             console.log("Appwrite serive :: uploadFile :: error", error);
             return false

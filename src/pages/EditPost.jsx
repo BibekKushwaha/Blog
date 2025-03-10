@@ -19,13 +19,13 @@ function EditPost() {
             navigate('/')
         }
     }, [slug, navigate])
-  return post ? (
-    <div className='py-8'>
+  return post && (
+    <div className='py-8 w-screen'>
         <Container>
             <PostForm post={post} />
         </Container>
     </div>
-  ) : null
+  ) 
 }
 
-export default EditPost
+export default EditPost;

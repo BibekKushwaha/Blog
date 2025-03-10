@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import { Controller } from 'react-hook-form';
@@ -11,12 +12,13 @@ export default function RTE({name,control,label,defaultValue = ""}) {
         <Controller
         name={name || 'content'}
         control={control}
-        defaultValue={defaultValue}
+        // defaultValue={defaultValue}
         render={({field: {onChange}}) => (
             <Editor
                 initialValue={defaultValue}
+                apiKey='ba8dfa3e6ro0i2cm8pr39gwlmeggukdat2sa1rus2nvd8ign'
                 init={{
-                    height: 300,
+                    height: 500,
                     menubar: true,
                     plugins: [
                         "image",
