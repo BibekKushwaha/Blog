@@ -34,7 +34,7 @@ export class AuthService {
         
         try {
             const session = await this.account.createEmailPasswordSession(email, password);
-            console.log("User logged in:", session);
+            // console.log("User logged in:", session);
             return session;
 
         } catch (error) {

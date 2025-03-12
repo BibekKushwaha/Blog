@@ -17,6 +17,7 @@ import React,{useId} from 'react'
         ref={ref}
         className={`text-block rounded-lg bg-white px-3 py-2 text-sm outline-none focus:bg-gray-50 duration-200 border border-gray-200 w-full ${className}`}
         {...props}
+        
         />
     </div>)
  });

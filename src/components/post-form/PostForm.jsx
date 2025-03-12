@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Input, RTE, Select } from "..";
 import appwriteService from "../../appwrite/config";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 
 export default function PostForm({ post }) {
     const { register, handleSubmit, watch, setValue, control, getValues } = useForm({
@@ -15,17 +15,15 @@ export default function PostForm({ post }) {
             status: post?.status || "active",
         },
     });
-
+    const [imageurl,setImageurl] = useState(null);
     const navigate = useNavigate();
     const userData = useSelector((state) => state.auth.userData);
-    console.log(userData.$id);
-    
-
+   const dispatch = useDispatch();
     const submit = async (data) => {
         console.log(data);
         
         if (post) {
-            const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
+            const file = data.image && data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
 
             if (file) {
                 appwriteService.deleteFile(post.featuredImage);
@@ -40,12 +38,16 @@ export default function PostForm({ post }) {
                 navigate(`/post/${dbPost.$id}`);
             }
         } else {
-            const file = await appwriteService.uploadFile(data.image[0]);
-           
+            // dispatch(createBlogPost({...data}));
+            const file = data.image && data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
+            console.log(userData.$id);
+            
             if (file) {
                 const fileId = file.$id;
                 data.featuredImage = fileId;
-                const dbPost = await appwriteService.createPost({ userId: userData ? userData.$id : null, ...data });
+                const dbPost = await appwriteService.createPost({ userid: userData ? userData.$id : null, 
+                ...data 
+                });
 
                 if (dbPost) {
                     navigate(`/post/${dbPost.$id}`);
@@ -65,6 +67,7 @@ export default function PostForm({ post }) {
         return "";
     }, []);
 
+    
     React.useEffect(() => {
         const subscription = watch((value, { name }) => {
             if (name === "title") {
@@ -74,7 +77,7 @@ export default function PostForm({ post }) {
 
         return () => subscription.unsubscribe();
     }, [watch, slugTransform, setValue]);
-
+    
     return (
         <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
             <div className="w-2/3 px-2">
@@ -101,7 +104,17 @@ export default function PostForm({ post }) {
                     type="file"
                     className="mb-4"
                     accept="image/png, image/jpg, image/jpeg, image/gif"
-                    {...register("image", { required: !post })}
+                    
+                    {...register("image", { 
+                        required: !post ,
+                        validate: {
+                            fileSize: (file) =>
+                                file[0]?.size <= 5 * 1024 * 1024 || "File size must be less than 5MB",
+                            fileType: (file) =>
+                                ["image/png", "image/jpg", "image/jpeg", "image/gif"].includes(file[0]?.type) ||
+                                "Invalid file type",
+                        },
+                    })}
                 />
                 {post && (
                     <div className="w-full mb-4">

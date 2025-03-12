@@ -15,7 +15,7 @@ export class Service{
         this.bucket = new Storage(this.client);
     }
 
-    async createPost({title, slug, content, featuredImage, status, userId}){
+    async createPost({title, slug, content, featuredImage, status, userid}){
     // console.log("Creating post with userId:", userId); // Log userId to verify it's being passed correctly
         try {
             return await this.databases.createDocument(
@@ -23,7 +23,7 @@ export class Service{
                 conf.appwriteCollectionId,
                 slug,
                 {
-                    userid:userId,
+                    userid,
                     title,
                     content,
                     featuredImage,

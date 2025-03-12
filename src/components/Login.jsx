@@ -4,7 +4,9 @@ import { login as authLogin } from '../store/authSlice'
 import {Button, Input, Logo} from "./index"
 import {useDispatch} from "react-redux"
 import authService from "../appwrite/auth"
-import {useForm} from "react-hook-form"
+import {useForm} from "react-hook-form";
+import appwriteService from "../appwrite/config";
+import { getAllPost } from '../store/postSlice'
 
 function Login() {
     const navigate = useNavigate()
@@ -17,8 +19,18 @@ function Login() {
         try {
             const session = await authService.login(data)
             if (session) {
-                const userData = await authService.getCurrentUser()
-                if(userData) dispatch(authLogin(userData));
+                const userData = await authService.getCurrentUser();
+                // console.log(userData);
+                
+                if(userData) {
+                    dispatch(authLogin(userData))
+                };
+                const allPost = await appwriteService.getPosts();
+                console.log(allPost.documents);
+                if(allPost){
+                    dispatch(getAllPost(allPost.documents));
+                }
+                
                 navigate("/")
             }
         } catch (error) {
