@@ -23,11 +23,13 @@ function Login() {
                 // console.log(userData);
                 
                 if(userData) {
+                    localStorage.setItem("userData",userData);
                     dispatch(authLogin(userData))
                 };
                 const allPost = await appwriteService.getPosts();
                 console.log(allPost.documents);
                 if(allPost){
+                    localStorage.setItem("allPost",allPost);
                     dispatch(getAllPost(allPost.documents));
                 }
                 
